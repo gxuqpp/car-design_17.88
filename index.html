@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>鼓式制动器无自锁条件 · 式（9-12）</title>
+  <style>
+:root {
+  color-scheme: light;
+  --ink:#172632; --muted:#50636e; --line:#d5e1e5; --paper:#fff; --back:#eef4f5;
+  --teal:#006e6a; --pale:#e7f5f0; --blue:#176788; --purple:#7251a2;
+  --rust:#a34827; --warm:#fff2e7; --red:#a83734;
+  --shadow:0 2px 8px #234a5c08;
+  font:16px/1.55 system-ui,"Microsoft YaHei",sans-serif;
+}
+* {box-sizing:border-box}
+body {margin:0;color:var(--ink);background:var(--back)}
+[hidden] {display:none!important}
+.shell {width:min(1400px,100% - 64px);margin-inline:auto}
+.mast {background:#132d3b;color:#eaf7f9}
+.mast .shell {display:flex;justify-content:space-between;gap:10px 24px;min-height:60px;align-items:center;flex-wrap:wrap;padding-block:10px}
+.subject {font-weight:720;letter-spacing:.035em}
+.nav {display:flex;gap:4px;flex-wrap:wrap}
+.nav a,.nav [aria-current] {color:#d4e9ec;text-decoration:none;padding:6px 10px;border-radius:5px;font-size:.85rem}
+.nav a:hover,.nav [aria-current] {background:#284754;color:#fff}
+.intro {padding:26px 0 17px;display:flex;align-items:end;gap:12px 24px;justify-content:space-between;flex-wrap:wrap}
+h1,h2,h3,p,dl,dd {margin:0}
+h1 {font-size:clamp(1.65rem,3vw,2.4rem);line-height:1.18;letter-spacing:.025em}
+h2 {font-size:1.12rem;line-height:1.35}
+h3 {font-size:.98rem}
+.intro p {color:var(--muted);margin-top:7px}
+.ref {color:#3a5967;font-size:.85rem;font-weight:650;white-space:nowrap}
+.workspace {display:grid;grid-template-columns: minmax(256px, 294px) minmax(0,1fr);align-items:start;gap:15px}
+.stack {display:grid;gap:13px;min-width:0}
+.panel {background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:17px 19px;box-shadow:var(--shadow);min-width:0}
+.panel-title {display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:10px}
+.panel-title:not(:first-child) {margin-top:12px}
+.panel-copy {font-size:.9rem;color:var(--muted);margin-top:6px}
+.controls {padding:15px 16px}
+.controls > h2 {margin-bottom:10px}
+button,input,summary {font:inherit}
+button {cursor:pointer;border:1px solid #b9cfd6;background:#f6fafb;color:#153b48;padding:6px 10px;border-radius:6px;font-weight:650;line-height:1.35}
+button:hover {border-color:#49978a;background:#e7f5f0}
+button[aria-pressed=true] {color:#005147;background:#d8efe7;border-color:#96cabc}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible {outline:3px solid #238677;outline-offset:2px}
+.actions {display:flex;gap:6px;flex-wrap:wrap}
+.actions button {font-size:.82rem}
+.field {min-width:0;margin-top:8px;padding:0 0 7px;border-bottom:1px solid #e8eff0}
+.field:last-child {border-bottom:0}
+.field-head {display:flex;justify-content:space-between;gap:5px;align-items:center}
+.field-head label {font-size:.87rem;font-weight:650}
+.num {display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:.76rem;white-space:nowrap}
+.num input {width:71px;background:#f4f8f8;border:1px solid #ccdce0;border-radius:5px;padding:3px 5px;color:var(--ink);font-size:.85rem;font-variant-numeric:tabular-nums}
+[aria-invalid="true"] {border-color:var(--red)!important;background:#ffefed!important}
+input[type=range] {width:100%;height:18px;margin:1px 0 0;vertical-align:middle;accent-color:var(--teal);cursor:pointer}
+input[type=checkbox],input[type=radio] {accent-color:var(--teal)}
+.check {display:flex;align-items:center;gap:5px;font-size:.83rem;cursor:pointer}
+.field-note {font-size:.75rem;margin-top:2px;color:var(--muted)}
+.seg {display:flex;gap:3px;flex-wrap:wrap;border:0;padding:3px;margin:0;background:#eef4f5;border-radius:7px;min-inline-size:0}
+.seg legend {font-size:.86rem;font-weight:670;margin:0 0 4px}
+.seg label {position:relative;display:flex;flex:1;cursor:pointer;min-width:max-content;text-align:center}
+.seg input {position:absolute;opacity:0;width:1px;height:1px}
+.seg span {border-radius:5px;padding:5px 8px;line-height:1.35;color:#345360;font-size:.84rem;flex:1;border:1px solid transparent}
+.seg input:checked+span {color:#07433e;background:#d9efe8;border-color:#acd2c8;font-weight:750}
+.seg input:focus-visible+span {outline:2px solid var(--teal);outline-offset:2px}
+details {margin-top:8px}
+summary {cursor:pointer;color:#285263;font-size:.87rem;font-weight:730}
+.controls details {border-top:1px solid var(--line);padding-top:8px}
+.metrics {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.metric {min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:11px 13px;box-shadow:var(--shadow)}
+.metric.primary {background:var(--pale);border-color:#adcec4}
+.metric dt {font-size:.81rem;color:#3b5462;font-weight:700;margin-bottom:3px}
+.metric dd {font-size:clamp(1.26rem,2.1vw,1.75rem);font-weight:760;line-height:1.3;letter-spacing:-.015em;font-variant-numeric:tabular-nums}
+.metric dd small {font-size:.76rem;font-weight:600;color:var(--muted);padding-left:4px;white-space:nowrap}
+.message {border:1px solid #b8d9d0;border-radius:8px;background:var(--pale);padding:9px 12px;color:#13594c;font-size:.88rem}
+.message.warn {background:var(--warm);border-color:#e5c9a8;color:#873e21}
+.message.bad {background:#fff0ef;border-color:#ebc2be;color:#8d2d27}
+.message b {font-weight:780}
+.legend {list-style:none;display:flex;gap:4px 15px;flex-wrap:wrap;margin:6px 0 0;padding:0;font-size:.81rem;color:#3b5663}
+.legend li {display:flex;gap:5px;align-items:center}
+.swatch {display:inline-block;width:17px;border-top:3px solid var(--swatch);flex:none}
+.swatch.dash {border-top-style:dashed}
+canvas {display:block;width:100%}
+.plot {height:322px;border-radius:5px}
+.diagram {height:230px;background:#f5f9fa;border-radius:7px}
+.diagram.park-diagram {height:260px}
+.diagram.tall {height:415px}
+.visual-panel {padding-bottom:13px}
+figcaption,.caption {font-size:.82rem;color:var(--muted);margin-top:6px}
+figure {margin:0}
+.columns {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.columns.schematic {align-items:start;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);margin:0}
+.calc-list {display:grid;gap:7px;margin:9px 0 0;padding:0;list-style:none;font-variant-numeric:tabular-nums}
+.calc-list li {border-left:3px solid #c2dce1;padding:4px 7px 4px 9px;background:#f5f9fa;font-size:.87rem;overflow-wrap:anywhere}
+.math {font-family:"Cambria Math",Cambria,Georgia,serif;font-size:1.06em}
+.tasks {padding-left:1.25em;margin:9px 0 0;font-size:.89rem}
+.tasks li {margin-bottom:7px}
+.questions p {font-size:.84rem;margin-top:5px;color:#325360}
+.table-scroll {overflow:auto}
+table {width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td {text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:.87rem}
+th {background:#eef4f5;color:#263e48;font-weight:720}
+.data-table {margin-top:6px}
+.data-table th,.data-table td {font-size:.82rem}
+.nowrap {white-space:nowrap}
+.top-gap {margin-top:14px}
+footer {margin:15px 0 25px;padding:9px 0 0;color:#49616c;font-size:.8rem;border-top:1px solid var(--line)}
+.brake-tabs {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:3px 0 12px}
+.brake-tabs button {min-height:44px;line-height:1.25;padding:8px 4px;font-size:.86rem;background:#f9fcfc}
+.brake-tabs button[aria-pressed=true] {background:#d8efe7}
+.tab-letter {margin-right:3px;font-variant-numeric:tabular-nums;font-weight:850}
+.role-grid {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:9px 0}
+.role {padding:7px 9px;background:#f0f5f6;border:1px solid var(--line);border-radius:7px}
+.role.lead {background:#e0f3ec;border-color:#afd4c7}
+.role.trail {background:#fff1e6;border-color:#e8c8ac}
+.role dt {font-size:.78rem;color:#40556a}
+.role dd {font-weight:760;font-size:1.02rem}
+.details-list {display:grid;gap:7px;margin-top:9px}
+.details-list p {font-size:.86rem}
+.details-list b {margin-right:5px}
+.drum-table {min-width:780px}
+.drum-table tbody tr.is-current {background:#eff9f4}
+.drum-table .shape-cell {min-width:125px}
+.drum-table .application {min-width:180px}
+.brake-ref {font-size:.77rem;color:#375968;margin-left:2px}
+a {color:#155c7c;text-underline-offset:2px}
+.bars {display:grid;gap:8px;margin:9px 0}
+.bar-line {display:grid;grid-template-columns:105px minmax(0,1fr) auto;gap:7px;align-items:center;font-size:.85rem}
+.bar-track {height:10px;border-radius:6px;overflow:hidden;background:#e1ebee;display:flex}
+.bar-track i {display:block;height:100%;background:var(--teal);min-width:0}
+.bar-track i.rust {background:#b05b34}
+.bar-track i.blue {background:#287b9e}
+.bar-line strong {font-variant-numeric:tabular-nums}
+.hint {font-size:.84rem;color:var(--muted)}
+.pressure-readings {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:7px}
+.pressure-readings > div {border-left:2px solid #85bcb9;padding:3px 7px;font-size:.81rem}
+.pressure-readings dd {font-size:.97rem;font-weight:740}
+@media(max-width:1060px) {
+  .shell {width:calc(100% - 34px)}
+  .workspace {grid-template-columns:minmax(228px,252px) minmax(0,1fr);gap:10px}
+  .panel {padding-inline:13px}
+  .metric {padding-inline:9px}
+}
+@media(max-width:760px) {
+  .shell {width:calc(100% - 24px)}
+  .intro {padding-top:16px;gap:6px}
+  .intro p {font-size:.87rem}
+  .workspace,.columns,.columns.schematic {grid-template-columns:minmax(0,1fr)}
+  .workspace > .stack {display:contents}
+  .workspace > .stack > .metrics {grid-row:1}
+  .workspace > .stack > .message {grid-row:2}
+  .workspace > .controls {grid-row:3}
+  .metrics {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .brake-tabs {grid-template-columns:repeat(3,minmax(0,1fr))}
+  .controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
+  .controls h2,.controls > .actions,.controls > fieldset,.controls > details,.controls > .wide {grid-column:1/-1}
+  .diagram.tall {height:330px}
+  .field {margin-top:5px}
+}
+@media(max-width:425px) {
+  .controls {grid-template-columns:minmax(0,1fr)}
+  .nav {gap:2px}
+  .nav a,.nav [aria-current] {padding-inline:7px}
+  .diagram {height:195px}
+  .diagram.park-diagram {height:195px}
+  .diagram.tall {height:280px}
+  .plot {height:290px}
+  .bar-line {grid-template-columns:76px minmax(0,1fr) auto}
+}
+@media print {
+  body {background:#fff}
+  .shell {width:100%}
+  .mast {background:white;color:var(--ink)}
+  .nav,button {display:none}
+  .panel,.metric {box-shadow:none;break-inside:avoid}
+}
+
+.lesson {padding-bottom:14px}
+.step-nav {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:4px 0 13px}
+.step-nav button {min-height:40px;font-size:.86rem}
+.step-nav span {display:inline-block;margin-right:6px;font-variant-numeric:tabular-nums;font-weight:820}
+.derivation {display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:13px;align-items:start}
+.force-figure {min-width:0}
+.force-view {height:351px}
+.proof {min-width:0;border:1px solid #dbe7e9;border-radius:8px;background:#f8fbfb;padding:12px 13px}
+.proof p {font-size:.88rem;margin-top:7px;color:#374f59}
+.equation {font-size:clamp(.91rem,1.21vw,1.08rem);line-height:1.55;margin-top:7px;
+  padding:6px 8px;background:#e9f2f4;border-radius:5px;color:#153746;overflow-wrap:anywhere}
+.fraction {display:inline-grid;place-items:center;vertical-align:middle;line-height:1.19;max-width:100%;text-align:center}
+.fraction > span {display:block;padding:2px 4px;width:100%}
+.fraction > span:first-child {border-bottom:1px solid currentColor}
+.eq-no {color:#345d69;font:500 .78rem system-ui,sans-serif;white-space:nowrap}
+.step-controls {display:flex;justify-content:space-between;gap:6px;margin-top:12px}
+button:disabled {cursor:default;opacity:.48}
+button:disabled:hover {background:#f6fafb;border-color:#b9cfd6}
+#denom-plot {height:282px}
+.calc-list + details {margin-top:12px}
+.proof .equation .nowrap {white-space:nowrap}
+@media(max-width:1080px) {
+  .derivation {grid-template-columns:minmax(0,1fr)}
+  .force-view {height:328px}
+}
+@media(max-width:470px) {
+  .step-nav {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .force-view {height:257px}
+  #denom-plot {height:246px}
+}
+
+  </style>
+  <script>
+  /* 防止右键与快捷键查看源代码 */
+  (function () {
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); }, true);
+    document.addEventListener('keydown', function (e) {
+      var c = e.code, mod = e.ctrlKey || e.metaKey;
+      if (e.key === 'F12' ||
+          (mod && (c === 'KeyU' || c === 'KeyS')) ||
+          (mod && e.shiftKey && (c === 'KeyI' || c === 'KeyJ' || c === 'KeyC')) ||
+          (e.metaKey && e.altKey && (c === 'KeyI' || c === 'KeyJ' || c === 'KeyC' || c === 'KeyU'))) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  })();
+  </script>
+</head>
+<body>
+  <header class="mast"><div class="shell">
+    <span class="subject">《汽车设计》　制动系统设计</span>
+    <nav class="nav" aria-label="第9章教学工具"><a href="17.86-9.2-%E9%BC%93%E5%BC%8F%E5%88%B6%E5%8A%A8%E5%99%A8%E7%BB%93%E6%9E%84%E4%B8%8E%E9%A2%86%E8%B9%84%E4%BB%8E%E8%B9%84-%E5%9B%BE9-1.html">鼓式制动器结构</a><span aria-current="page">鼓式制动器自锁判据</span></nav>
+  </div></header>
+  <main class="shell">
+    <div class="intro">
+      <div><h1>鼓式制动器无自锁条件</h1><p>从领蹄受力到式（9-12），看摩擦力为什么会使分母变小。</p></div>
+      <p class="ref">教材第304–306页　图9-12</p>
+    </div>
+
+    <div class="workspace">
+      <aside class="panel controls" aria-label="自锁判定参数">
+        <h2>领蹄参数</h2>
+        <div class="field" id="friction-field">
+  <div class="field-head">
+    <label id="friction-label" for="friction-num">衬片–制动鼓摩擦因数 f</label>
+    <span class="num"><input id="friction-num" type="number" min="0" max="2.2" step="any" value="0.3" aria-describedby="friction-help"> </span>
+  </div>
+  <input type="range" id="friction" aria-labelledby="friction-label" min="0" max="2.2" step="0.005" value="0.3" aria-describedby="friction-help">
+  <p class="field-note" id="friction-help">教材计算示例采用0.30。可沿滑条跨越理论临界点。</p>
+</div>
+<div class="field" id="support-field">
+  <div class="field-head">
+    <label id="support-label" for="support-num">鼓中心到支点 c′</label>
+    <span class="num"><input id="support-num" type="number" min="60" max="140" step="any" value="110"> mm</span>
+  </div>
+  <input type="range" id="support" aria-labelledby="support-label" min="60" max="140" step="1" value="110">
+  
+</div>
+<div class="field" id="radius-field">
+  <div class="field-head">
+    <label id="radius-label" for="radius-num">等效摩擦作用半径 R₁</label>
+    <span class="num"><input id="radius-num" type="number" min="155" max="245" step="any" value="195" aria-describedby="radius-help"> mm</span>
+  </div>
+  <input type="range" id="radius" aria-labelledby="radius-label" min="155" max="245" step="1" value="195" aria-describedby="radius-help">
+  <p class="field-note" id="radius-help">R₁ 为鼓中心到摩擦合力作用线的距离。</p>
+</div>
+<div class="field" id="angle-field">
+  <div class="field-head">
+    <label id="angle-label" for="angle-num">法向合力线与 x₁ 的夹角 δ₁</label>
+    <span class="num"><input id="angle-num" type="number" min="-25" max="52" step="any" value="12"> °</span>
+  </div>
+  <input type="range" id="angle" aria-labelledby="angle-label" min="-25" max="52" step="1" value="12">
+  
+</div>
+<div class="field" id="lever-field">
+  <div class="field-head">
+    <label id="lever-label" for="lever-num">张开力对支点的力臂 h</label>
+    <span class="num"><input id="lever-num" type="number" min="150" max="270" step="any" value="210"> mm</span>
+  </div>
+  <input type="range" id="lever" aria-labelledby="lever-label" min="150" max="270" step="1" value="210">
+  
+</div>
+<div class="field" id="opening-field">
+  <div class="field-head">
+    <label id="opening-label" for="opening-num">领蹄张开力 F₀₁</label>
+    <span class="num"><input id="opening-num" type="number" min="0" max="2000" step="any" value="450"> N</span>
+  </div>
+  <input type="range" id="opening" aria-labelledby="opening-label" min="0" max="2000" step="10" value="450">
+  
+</div>
+        <div class="actions wide top-gap">
+          <button id="load-example" type="button">手算例</button>
+          <button id="release-shoe" type="button">令 F₀₁＝0</button>
+          <button id="reset-input" type="button">恢复初值</button>
+        </div>
+      </aside>
+
+      <div class="stack">
+        <dl class="metrics"><div class="metric primary"><dt>临界摩擦因数 f<sub>cr</sub></dt>
+    <dd><span id="critical-f">—</span><small></small></dd></div><div class="metric"><dt>式（9-12）分母</dt>
+    <dd><span id="denominator">—</span><small>mm</small></dd></div><div class="metric"><dt>法向合力 F₁</dt>
+    <dd><span id="normal-force">—</span><small>N</small></dd></div><div class="metric"><dt>单蹄制动力矩 M<sub>μt1</sub></dt>
+    <dd><span id="brake-moment">—</span><small>N·m</small></dd></div></dl>
+        <div class="message" id="lock-status" role="status"></div>
+        <section class="panel lesson" aria-label="式9-12逐步推导">
+          <div class="panel-title"><h2>式（9-12）逐步推导</h2></div>
+          <nav class="step-nav" aria-label="选择推导步骤"><button type="button" data-step="0" aria-pressed="true"><span>1</span>列平衡方程</button><button type="button" data-step="1" aria-pressed="false"><span>2</span>消元求合力</button><button type="button" data-step="2" aria-pressed="false"><span>3</span>求制动力矩</button><button type="button" data-step="3" aria-pressed="false"><span>4</span>判定自锁</button></nav>
+          <div class="derivation">
+            <figure class="force-figure">
+              <canvas class="diagram force-view" id="force-view" role="img" aria-label="图9-12领蹄受力与力臂"></canvas>
+              <ul class="legend"><li><i class="swatch" style="--swatch:var(--blue)"></i>张开力 F₀₁</li><li><i class="swatch" style="--swatch:var(--teal)"></i>法向合力 F₁</li><li><i class="swatch" style="--swatch:var(--rust)"></i>摩擦合力 fF₁</li><li><i class="swatch" style="--swatch:#687983"></i>支承反力分量</li></ul>
+              <figcaption id="figure-note"></figcaption>
+            </figure>
+            <div class="proof" id="proof">
+              <article data-proof="0">
+                <h3>沿 x₁ 投影，绕鼓中心 O 取矩</h3>
+                <p>取逆时针为力矩正向。法向合力 F₁ 的作用线通过 O。支承反力沿 y₁ 的分量也通过 O，两者绕 O 的力矩为零。</p>
+                <div class="equation math">F₀₁ cos α₀ + F′<sub>x</sub> − F₁(cos δ₁ + f sin δ₁) = 0</div>
+                <div class="equation math">F₀₁ a − F′<sub>x</sub> c′ + fR₁F₁ = 0</div>
+                <p>两式分别对应式（9-10）的力平衡与力矩平衡。F′<sub>x</sub> 是沿 x₁ 的支承反力投影。</p>
+              </article>
+              <article data-proof="1" hidden>
+                <h3>消去支承反力 F′<sub>x</sub></h3>
+                <p>先由力平衡解出 F′<sub>x</sub>，代入绕 O 的力矩方程。</p>
+                <div class="equation math">F′<sub>x</sub> = F₁(cos δ₁ + f sin δ₁) − F₀₁ cos α₀</div>
+                <p>整理后，右边的力臂 a + c′ cos α₀ 恰好等于 h。</p>
+                <div class="equation math">F₁[c′(cos δ₁ + f sin δ₁) − fR₁] = hF₀₁</div>
+                <div class="equation math">F₁ = <span class="fraction"><span>hF₀₁</span><span>c′(cos δ₁ + f sin δ₁) − fR₁</span></span> <span class="eq-no">（9-11）</span></div>
+              </article>
+              <article data-proof="2" hidden>
+                <h3>把法向合力换成鼓上的制动力矩</h3>
+                <p>由式（9-9），鼓上力矩的大小是摩擦合力 fF₁ 乘以对鼓中心的力臂 R₁。</p>
+                <div class="equation math">M<sub>μt1</sub> = fF₁R₁</div>
+                <p>代入式（9-11），得到输入张开力与单蹄制动力矩的关系。</p>
+                <div class="equation math">M<sub>μt1</sub> = <span class="fraction"><span>F₀₁ f h R₁</span><span>c′(cos δ₁ + f sin δ₁) − fR₁</span></span> <span class="nowrap">= F₀₁D₁</span> <span class="eq-no">（9-12）</span></div>
+                <p>D₁ 是力矩与张开力之比，单位为 mm。用 N 和 mm 代入得到 N·mm，页面将力矩换算为 N·m。</p>
+              </article>
+              <article data-proof="3" hidden>
+                <h3>分母为零时，两个力矩恰好相抵</h3>
+                <div class="equation math">分母 = c′ cos δ₁ − f(R₁ − c′ sin δ₁)</div>
+                <p>绕支点 A₁ 看，第一项乘 F₁ 是法向力的闭合力矩，第二项乘 F₁ 是摩擦助张开的力矩。两者相等时，即使 F₀₁＝0，矩平衡仍允许已有的压紧力。</p>
+                <div class="equation math">f<sub>cr</sub> = <span class="fraction"><span>c′ cos δ₁</span><span>R₁ − c′ sin δ₁</span></span> <span class="nowrap">　无自锁 f &lt; f<sub>cr</sub></span></div>
+                <p>图示领蹄的 R₁ − c′ sin δ₁ &gt; 0。分母为正时，令 F₀₁＝0，由 F₁×分母＝hF₀₁ 得 F₁＝0，蹄片失去压紧力。</p>
+              </article>
+              <div class="step-controls">
+                <button type="button" id="step-back">上一步</button>
+                <button type="button" id="step-next">下一步</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="columns">
+      <section class="panel visual-panel">
+        <div class="panel-title"><h2>分母随摩擦因数变化</h2></div>
+        <div class="actions">
+          <button type="button" data-boundary="0.95">临界前</button>
+          <button type="button" data-boundary="1">到临界点</button>
+          <button type="button" data-boundary="1.05">越过临界点</button>
+        </div>
+        <figure>
+          <canvas class="plot" id="denom-plot" role="img" aria-label="式9-12分母与摩擦因数曲线"></canvas>
+          <ul class="legend"><li><i class="swatch" style="--swatch:var(--teal)"></i>分母</li><li><i class="swatch" style="--swatch:var(--rust)"></i>自锁临界</li><li><i class="swatch dash" style="--swatch:#687983"></i>分母为零</li></ul>
+          <figcaption id="boundary-note"></figcaption>
+        </figure>
+      </section>
+      <section class="panel">
+        <h2>绕支点 A₁ 比较力矩</h2>
+        <p class="panel-copy">每 1 N 法向合力 F₁ 所对应的两项力矩。</p>
+        <div class="bars">
+          <div class="bar-line"><span>法向力闭合</span><div class="bar-track"><i id="normal-bar"></i></div><strong id="normal-arm"></strong></div>
+          <div class="bar-line"><span>摩擦助张开</span><div class="bar-track"><i class="rust" id="friction-bar"></i></div><strong id="friction-arm"></strong></div>
+        </div>
+        <h3>带入当前数据</h3>
+        <ul class="calc-list">
+          <li id="calc-critical"></li><li id="calc-denominator"></li><li id="calc-result"></li>
+        </ul>
+        <details>
+          <summary>图中符号和模型范围</summary>
+          <p class="panel-copy">c′ 是鼓中心 O 到支点 A₁ 的距离。h 是张开力 F₀₁ 的作用线到支点 A₁ 的垂距。R₁ 是摩擦合力对 O 的力臂。δ₁ 按式（9-10）的投影方向取符号。</p>
+          <p class="panel-copy">图中固定 α₀＝18° 用于示意投影。式（9-12）直接用 h。图线使用等效作用线，箭头仅表示力的方向。判据对应单个领蹄的静力模型。</p>
+        </details>
+      </section>
+    </div>
+
+    <section class="panel top-gap">
+      <h2>课堂探究</h2>
+      <ol class="tasks">
+        <li>载入手算例。将 f 依次调到0.30、0.49、0.50和0.51，比较分母，再解释为何后两组停止给出有限制动力矩。</li>
+        <li>在临界点按“令 F₀₁＝0”。结合两条力矩条，解释为什么矩平衡仍允许蹄片与鼓保持压紧。</li>
+        <li>在无自锁区只增大 F₀₁，比较临界 f 与制动力矩。再只改 R₁，说明哪一项力臂变化改变了临界 f。</li>
+      </ol>
+    </section>
+    <footer>《汽车设计》第5版第9章，印刷第304–306页，式（9-9）至（9-12）。</footer>
+  </main>
+  <script>
+'use strict';
+
+const $ = id => document.getElementById(id);
+const numberFormats = Array.from({length:5}, (_,digits) => new Intl.NumberFormat(
+  'zh-CN', {minimumFractionDigits:digits, maximumFractionDigits:digits}
+));
+const fmt = (value, digits = 0) => Number.isFinite(value) ? numberFormats[digits].format(value) : '—';
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const RAD = Math.PI / 180;
+const colors = {ink:'#172632', muted:'#50636e', grid:'#dae7eb', teal:'#006e6a',
+  blue:'#176788', purple:'#7251a2', rust:'#a34827', slate:'#687983', red:'#a83734'};
+const font = 'system-ui,"Microsoft YaHei",sans-serif';
+
+function put(id, value) {
+  $(id).textContent = value;
+}
+
+function metric(id, value, digits = 0) {
+  put(id, fmt(value, digits));
+}
+
+function bindControls(defaults, onChange) {
+  const state = {...defaults};
+  const keys = Object.keys(state);
+  function reflect(key) {
+    $(key).value = state[key];
+    $(key + '-num').value = state[key];
+    $(key + '-num').removeAttribute('aria-invalid');
+  }
+  for (const key of keys) {
+    const slider = $(key);
+    const number = $(key + '-num');
+    slider.addEventListener('input', () => {
+      state[key] = slider.valueAsNumber;
+      reflect(key);
+      onChange();
+    });
+    number.addEventListener('input', () => {
+      const v = number.valueAsNumber;
+      const valid = Number.isFinite(v) && v >= Number(number.min) && v <= Number(number.max);
+      if (!valid) {
+        number.setAttribute('aria-invalid','true');
+        return;
+      }
+      number.removeAttribute('aria-invalid');
+      state[key] = v;
+      slider.value = v;
+      onChange();
+    });
+    number.addEventListener('blur', () => {
+      const v = number.valueAsNumber;
+      if (Number.isFinite(v)) state[key] = clamp(v, Number(number.min), Number(number.max));
+      reflect(key);
+      onChange();
+    });
+  }
+  return {
+    state,
+    set(values) {
+      Object.assign(state, values);
+      for (const key of keys) reflect(key);
+      onChange();
+    },
+    reset() { this.set(defaults); }
+  };
+}
+
+function line(ctx, x1, y1, x2, y2, color, width = 1, dash = []) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.setLineDash(dash);
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2,y2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function arrow(ctx, x1, y1, x2, y2, color, width = 2.5, head = 8) {
+  const angle = Math.atan2(y2-y1,x2-x1);
+  ctx.save();
+  ctx.strokeStyle = ctx.fillStyle = color;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.lineTo(x2 - head*.4*Math.cos(angle), y2 - head*.4*Math.sin(angle));
+  ctx.stroke();
+  ctx.translate(x2,y2);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(0,0);
+  ctx.lineTo(-head,-head*.5);
+  ctx.lineTo(-head,head*.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function label(ctx, text, x, y, color = colors.ink, size = 14, align = 'left', weight = 550) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  ctx.font = weight + ' ' + size + 'px ' + font;
+  ctx.fillText(text,x,y);
+  ctx.restore();
+}
+
+function box(ctx, x, y, w, h, r, fill, stroke, width = 1) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+  if (fill) { ctx.fillStyle=fill; ctx.fill(); }
+  if (stroke) { ctx.lineWidth=width; ctx.strokeStyle=stroke; ctx.stroke(); }
+  ctx.restore();
+}
+
+function circle(ctx, x, y, r, fill, stroke, width = 1) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  if (fill) { ctx.fillStyle=fill; ctx.fill(); }
+  if (stroke) { ctx.lineWidth=width; ctx.strokeStyle=stroke; ctx.stroke(); }
+  ctx.restore();
+}
+
+function scaled(ctx, w, h, virtualWidth, virtualHeight, paint) {
+  const scale = Math.min(w/virtualWidth,h/virtualHeight);
+  ctx.save();
+  ctx.translate((w-virtualWidth*scale)/2,(h-virtualHeight*scale)/2);
+  ctx.scale(scale,scale);
+  paint(ctx);
+  ctx.restore();
+}
+
+function canvasRenderer(id, paint) {
+  const canvas = $(id);
+  function render() {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (!w || !h) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const newWidth = Math.round(w*dpr);
+    const newHeight = Math.round(h*dpr);
+    if (canvas.width !== newWidth || canvas.height !== newHeight) {
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    paint(ctx,w,h);
+  }
+  new ResizeObserver(render).observe(canvas);
+  return render;
+}
+
+function axis(limit, divisions = 5) {
+  const target = Math.max(limit, Number.EPSILON) / divisions;
+  const scale = 10**Math.floor(Math.log10(target));
+  const unit = [1,2,2.5,5,10].find(value => value*scale >= target-1e-9*scale);
+  const step = unit*scale;
+  const intervals = Math.ceil(limit/step-1e-10);
+  return Array.from({length:intervals+1}, (_,i) => i*step);
+}
+
+function plot(ctx, w, h, options) {
+  const rect = {left:w < 420 ? 48 : 58, right:w-15, top:27, bottom:h-45};
+  const xMax = options.xTicks.at(-1);
+  const yMax = options.yTicks.at(-1);
+  const x = value => rect.left + value/xMax*(rect.right-rect.left);
+  const y = value => rect.bottom - value/yMax*(rect.bottom-rect.top);
+  const xText = options.xText || (n => fmt(n));
+  const yText = options.yText || (n => fmt(n));
+  for (const tick of options.xTicks) {
+    line(ctx,x(tick),rect.top,x(tick),rect.bottom,colors.grid);
+    label(ctx,xText(tick),x(tick),rect.bottom+14,colors.muted,11,'center',500);
+  }
+  for (const tick of options.yTicks) {
+    line(ctx,rect.left,y(tick),rect.right,y(tick),colors.grid);
+    label(ctx,yText(tick),rect.left-6,y(tick),colors.muted,11,'right',500);
+  }
+  line(ctx,rect.left,rect.top,rect.left,rect.bottom,colors.muted,1.2);
+  line(ctx,rect.left,rect.bottom,rect.right,rect.bottom,colors.muted,1.2);
+  label(ctx,options.yLabel,rect.left,11,colors.muted,12);
+  label(ctx,options.xLabel,(rect.left+rect.right)/2,h-9,colors.muted,12,'center');
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top);
+  ctx.clip();
+  for (const curve of options.curves) {
+    ctx.beginPath();
+    ctx.strokeStyle = curve.color;
+    ctx.lineWidth = curve.width || 2.4;
+    ctx.setLineDash(curve.dash || []);
+    let active = false;
+    const steps = 190;
+    for (let i=0;i<=steps;i++) {
+      const xx = xMax*i/steps;
+      const yy = curve.fn(xx);
+      if (!Number.isFinite(yy)) { active = false; continue; }
+      if (active) ctx.lineTo(x(xx),y(yy));
+      else ctx.moveTo(x(xx),y(yy));
+      active = true;
+    }
+    ctx.stroke();
+  }
+  if (Number.isFinite(options.cursor)) {
+    line(ctx,x(options.cursor),rect.top,x(options.cursor),rect.bottom,'#8c9ea6',1.3,[3,4]);
+  }
+  ctx.restore();
+  for (const point of options.points || []) {
+    if (point.x < 0 || point.x > xMax || point.y < 0 || point.y > yMax) continue;
+    const xx = x(point.x), yy = y(point.y);
+    circle(ctx,xx,yy,point.r || 4.4,point.fill || point.color,'white',1.5);
+    if (point.label) {
+      const toLeft = xx > rect.right-60 || point.left === true;
+      label(ctx,point.label,xx + (toLeft ? -7 : 7),yy+(point.offset ?? -11),
+        point.color,11,toLeft ? 'right' : 'left',700);
+    }
+  }
+}
+
+const INITIAL = {friction:.30,support:110,radius:195,angle:12,lever:210,opening:450};
+const EXAMPLE = {friction:.30,support:100,radius:200,angle:0,lever:180,opening:500};
+const controls = bindControls(INITIAL,update);
+const alpha = 18*RAD;
+let result;
+let step = 0;
+
+function solve(config) {
+  const {friction,support,radius,angle,lever,opening} = config;
+  const delta = angle*RAD;
+  const normalArm = support*Math.cos(delta);
+  const frictionArm = radius-support*Math.sin(delta);
+  const critical = normalArm/frictionArm;
+  const frictionMomentPerN = friction*frictionArm;
+  const rawDenominator = normalArm-frictionMomentPerN;
+  const denominator = Math.abs(rawDenominator)<1e-8 ? 0 : rawDenominator;
+  const normal = denominator>0 ? lever*opening/denominator : NaN;
+  const moment = friction*normal*radius/1000;
+  return {config:{...config},delta,normalArm,frictionArm,critical,frictionMomentPerN,denominator,normal,moment};
+}
+
+function margin(value) {
+  if (value !== 0 && Math.abs(value)<.005) return value.toExponential(2);
+  return fmt(value,2);
+}
+
+function magnitude(value, digits) {
+  return Number.isFinite(value) && value >= 1e6 ? value.toExponential(3) : fmt(value,digits);
+}
+
+function showNumbers(r) {
+  const f = r.config.friction;
+  const opened = r.config.opening>0;
+  metric('critical-f',r.critical,4);
+  put('denominator',margin(r.denominator));
+  put('normal-force',magnitude(r.normal,1));
+  put('brake-moment',magnitude(r.moment,2));
+  const status = $('lock-status');
+  let message;
+  if (r.denominator > 0) {
+    const close = r.denominator/r.normalArm < .06;
+    status.className = close ? 'message warn' : 'message';
+    message = '分母为正，当前 f 低于临界值，未达到自锁条件。';
+    if (close && opened) message += '已接近临界，模型中的法向合力对 f 很敏感。';
+    if (!opened) message += '撤去张开力后，平衡给出 F₁＝0。';
+  } else if (r.denominator === 0) {
+    status.className = 'message warn';
+    message = opened ? '达到自锁临界。分母为零，正张开力下没有有限的静力解。' :
+      '达到自锁临界。F₀₁＝0 时，摩擦助张开力矩可抵消法向力闭合力矩，方程仍允许已有压紧力。';
+  } else {
+    status.className = 'message bad';
+    message = '超过自锁临界。摩擦助张开项超过法向闭合项，式（9-12）失去可用的压紧解。';
+  }
+  status.textContent = message;
+  const barMax = Math.max(r.normalArm,r.frictionMomentPerN);
+  $('normal-bar').style.width = 100*r.normalArm/barMax+'%';
+  $('friction-bar').style.width = 100*r.frictionMomentPerN/barMax+'%';
+  put('normal-arm',fmt(r.normalArm,2)+' N·mm');
+  put('friction-arm',fmt(r.frictionMomentPerN,2)+' N·mm');
+  put('calc-critical','临界 f_cr ＝ '+fmt(r.normalArm,3)+' ÷ '+fmt(r.frictionArm,3)+' ≈ '+fmt(r.critical,4)+'。');
+  put('calc-denominator','式（9-12）分母＝'+fmt(r.normalArm,3)+' − '+fmt(f,4)+' × '+
+    fmt(r.frictionArm,3)+'＝'+margin(r.denominator)+' mm。');
+  put('calc-result', r.denominator>0
+    ? 'F₁＝'+fmt(r.config.opening)+' × '+fmt(r.config.lever)+' ÷ '+margin(r.denominator)+' ≈ '+magnitude(r.normal,1)+
+      ' N。Mμt1＝fF₁R₁ ÷ 1000 ≈ '+magnitude(r.moment,2)+' N·m。'
+    : '分母非正时停止显示由式（9-12）外推的制动力矩。');
+  $('denom-plot').setAttribute('aria-label','分母随摩擦因数线性下降。临界摩擦因数'+
+    fmt(r.critical,4)+'，当前摩擦因数'+fmt(f,4)+'，分母'+margin(r.denominator)+'毫米。');
+  put('boundary-note','调 f 会沿同一条直线移动。改变几何会改变直线与零线的交点。当前 f＝'+fmt(f,4)+
+    '，分母为 '+margin(r.denominator)+' mm。');
+}
+
+function update() {
+  result = solve(controls.state);
+  showNumbers(result);
+  drawForce();
+  drawDenominator();
+}
+
+const supportColor = '#687983';
+const figureNotes = [
+  '沿 x₁ 投影时用到 F₁ cos δ₁ 和 fF₁ sin δ₁。力箭头示方向，长度为示意。',
+  '两条虚线分别给出法向力和摩擦力关于支点 A₁ 的垂距。',
+  'R₁ 从鼓中心 O 量到摩擦合力作用线，与法向合力到支点的力臂不同。',
+  '比较支点 A₁ 两侧力矩。摩擦产生张开作用，法向合力产生闭合作用。'
+];
+
+function selectStep(index) {
+  step = clamp(index,0,3);
+  for (const button of document.querySelectorAll('[data-step]')) {
+    button.setAttribute('aria-pressed', Number(button.dataset.step)===step?'true':'false');
+  }
+  for (const article of document.querySelectorAll('[data-proof]')) article.hidden=Number(article.dataset.proof)!==step;
+  $('step-back').disabled=step===0;
+  $('step-next').disabled=step===3;
+  put('figure-note',figureNotes[step]);
+  drawForce();
+}
+
+const drawDenominator = canvasRenderer('denom-plot',(ctx,w,h) => {
+  if (!result) return;
+  const r = result;
+  const xTicks = axis(Math.max(.75,r.critical*1.16,r.config.friction*1.08),5);
+  const maxF = xTicks.at(-1);
+  const minimum = r.normalArm - r.frictionArm*maxF;
+  const tick = axis(r.normalArm-minimum,5)[1];
+  const yOffset = Math.ceil(-minimum/tick)*tick;
+  const intervals = Math.ceil((r.normalArm+yOffset)/tick);
+  const yTicks = Array.from({length:intervals+1},(_,i)=>i*tick);
+  plot(ctx,w,h,{
+    xTicks,yTicks,
+    xText:n=>fmt(n,Number.isInteger(n)?0:2),
+    yText:n=>fmt(n-yOffset),
+    xLabel:'衬片–鼓摩擦因数 f',
+    yLabel:'式（9-12）分母 (mm)',
+    curves:[
+      {fn:()=>yOffset,color:supportColor,width:1.5,dash:[5,4]},
+      {fn:f=>r.normalArm-r.frictionArm*f+yOffset,color:colors.teal,width:2.8}
+    ],
+    cursor:r.config.friction,
+    points:[
+      {x:r.critical,y:yOffset,color:colors.rust,r:5.5,label:'f_cr '+fmt(r.critical,3),offset:-14},
+      {x:r.config.friction,y:r.denominator+yOffset,color:r.denominator>0?colors.teal:colors.rust,r:4.6}
+    ],
+  });
+});
+
+function edgePoint(from, axis, length) {
+  return {x:from.x+axis.x*length,y:from.y+axis.y*length};
+}
+
+function sketchArc(ctx,center,r,from,to,color,width,backwards=false) {
+  ctx.beginPath();
+  ctx.strokeStyle=color;
+  ctx.lineWidth=width;
+  ctx.arc(center.x,center.y,r,from,to,backwards);
+  ctx.stroke();
+}
+
+function vecLine(ctx,a,b,color,width,dash) {
+  line(ctx,a.x,a.y,b.x,b.y,color,width,dash);
+}
+
+function vecArrow(ctx,a,b,color,width,head) {
+  arrow(ctx,a.x,a.y,b.x,b.y,color,width,head);
+}
+
+function extendAndMark(ctx,pivot,origin,dir,length,caption,color,offset) {
+  const projection=(pivot.x-origin.x)*dir.x+(pivot.y-origin.y)*dir.y;
+  const foot=edgePoint(origin,dir,projection);
+  const extended=edgePoint(origin,dir,length);
+  vecLine(ctx,origin,extended,color,1.2,[4,4]);
+  vecLine(ctx,pivot,foot,color,2,[5,3]);
+  circle(ctx,foot.x,foot.y,3,'white',color,1.4);
+  label(ctx,caption,(pivot.x+foot.x)/2+offset.x,clamp((pivot.y+foot.y)/2+offset.y,20,387),
+    color,15,offset.align,720);
+}
+
+const drawForce = canvasRenderer('force-view',(ctx,w,h) => {
+  if (!result) return;
+  scaled(ctx,w,h,626,405,ctx => {
+    const r = result, c = r.config;
+    const o = {x:370,y:215};
+    const x1 = {x:-Math.cos(alpha),y:-Math.sin(alpha)};
+    const y1 = {x:Math.sin(alpha),y:-Math.cos(alpha)};
+    const n = {
+      x:Math.cos(r.delta)*x1.x-Math.sin(r.delta)*y1.x,
+      y:Math.cos(r.delta)*x1.y-Math.sin(r.delta)*y1.y
+    };
+    const t = {x:n.y, y:-n.x};
+    const scale = Math.min(161/c.radius,198/c.lever);
+    const pivot = edgePoint(o,y1,-c.support*scale);
+    const contact = edgePoint(o,n,c.radius*scale);
+    const shoeRadius = (c.radius+c.support)*scale/2;
+    const leverY = pivot.y-c.lever*scale;
+    const opening = {x:o.x-39,y:leverY};
+    const edge = end => ({x:o.x+shoeRadius*Math.cos(end),y:o.y+shoeRadius*Math.sin(end)});
+
+    sketchArc(ctx,o,shoeRadius+14,100*RAD,266*RAD,'#d6e6eb',12);
+    sketchArc(ctx,o,shoeRadius+9,106*RAD,253*RAD,'#577682',1.8);
+    sketchArc(ctx,o,shoeRadius-1,111*RAD,245*RAD,'#7899a6',10);
+    vecLine(ctx,edge(112*RAD),pivot,'#7899a6',7);
+    vecLine(ctx,edge(244*RAD),opening,'#7899a6',7);
+    label(ctx,'衬片',o.x-shoeRadius-29,o.y-shoeRadius*.77,colors.muted,15,'right',640);
+
+    const rotationStart=-63*RAD;
+    const rotationEnd=-120*RAD;
+    const rotationRadius=shoeRadius+29;
+    sketchArc(ctx,o,rotationRadius,rotationStart,rotationEnd,colors.ink,2.4,true);
+    const ex=o.x+rotationRadius*Math.cos(rotationEnd), ey=o.y+rotationRadius*Math.sin(rotationEnd);
+    arrow(ctx,ex+13*Math.cos(rotationEnd+Math.PI/2),ey+13*Math.sin(rotationEnd+Math.PI/2),ex,ey,colors.ink,2.3,8);
+    label(ctx,'鼓旋向',o.x+rotationRadius*.51,o.y-rotationRadius*.88,colors.ink,15,'left',680);
+
+    line(ctx,o.x-196,o.y,545,o.y,'#cfdee2',1,[4,4]);
+    const xAxis=edgePoint(o,x1,207), yAxis=edgePoint(o,y1,132);
+    vecArrow(ctx,edgePoint(o,x1,-78),xAxis,'#91aab1',1.2,6);
+    vecArrow(ctx,edgePoint(pivot,y1,-23),yAxis,'#91aab1',1.2,6);
+    label(ctx,'x₁',xAxis.x-7,xAxis.y-10,colors.muted,15,'right');
+    label(ctx,'y₁',yAxis.x+8,yAxis.y,colors.muted,15);
+
+    vecLine(ctx,o,contact,step===2?colors.teal:'#758e98',step===2?2.4:1.2,[4,4]);
+    const theta=Math.atan2(x1.y,x1.x);
+    if (Math.abs(r.delta)>1*RAD) {
+      sketchArc(ctx,o,64,theta,theta-r.delta,'#465f68',1.4,r.delta>0);
+      const mid=theta-r.delta/2;
+      label(ctx,'δ₁',o.x+81*Math.cos(mid),o.y+81*Math.sin(mid)-10,colors.muted,15,'center',770);
+    }
+
+    // The two equivalent resultants have the textbook's lines of action.
+    const inputEnd={x:opening.x-81,y:opening.y};
+    if (c.opening>0) vecArrow(ctx,opening,inputEnd,colors.blue,3.1,9);
+    else vecLine(ctx,opening,inputEnd,colors.blue,1.3,[4,4]);
+    label(ctx,c.opening>0?'F₀₁':'F₀₁＝0',opening.x-87,opening.y-13,colors.blue,16,'left',780);
+    if (step===0) {
+      const reaction = edgePoint(pivot,x1,55);
+      vecArrow(ctx,pivot,reaction,supportColor,2.3,7);
+      label(ctx,'F′ₓ',reaction.x-4,reaction.y+12,supportColor,15,'right',650);
+    }
+    const normalEnd=edgePoint(contact,n,-Math.min(70,c.radius*scale*.42));
+    vecArrow(ctx,contact,normalEnd,colors.teal,3,9);
+    label(ctx,'F₁',normalEnd.x+3,normalEnd.y+17,colors.teal,16,'center',770);
+    const frictionEnd=edgePoint(contact,t,61);
+    if (c.friction>0) vecArrow(ctx,contact,frictionEnd,colors.rust,3,9);
+    else vecLine(ctx,contact,frictionEnd,colors.rust,1.3,[4,4]);
+    label(ctx,c.friction>0?'fF₁':'fF₁＝0',frictionEnd.x-7,frictionEnd.y+12,colors.rust,16,'right',770);
+
+    if (step===1 || step===3) {
+      extendAndMark(ctx,pivot,o,n,202,'c′ cos δ₁',colors.teal,{x:13,y:3,align:'left'});
+      extendAndMark(ctx,pivot,contact,t,122,'R₁ − c′ sin δ₁',colors.rust,{x:-16,y:26,align:'center'});
+    }
+    if (step===2) {
+      label(ctx,'R₁',(o.x+contact.x)/2+4,(o.y+contact.y)/2-16,colors.teal,17,'center',780);
+      circle(ctx,contact.x,contact.y,4,'white',colors.teal,1.5);
+    }
+
+    const dimensionX=560;
+    line(ctx,opening.x+8,leverY,dimensionX+5,leverY,'#afc3c9',1,[3,4]);
+    line(ctx,pivot.x+7,pivot.y,dimensionX+5,pivot.y,'#afc3c9',1,[3,4]);
+    arrow(ctx,dimensionX,pivot.y-2,dimensionX,leverY+2,supportColor,1.3,6);
+    arrow(ctx,dimensionX,leverY+2,dimensionX,pivot.y-2,supportColor,1.3,6);
+    label(ctx,'h',dimensionX+10,(leverY+pivot.y)/2,supportColor,17,'left',700);
+    if (step===0) label(ctx,'c′',(o.x+pivot.x)/2+10,(o.y+pivot.y)/2-4,colors.muted,15,'left');
+    circle(ctx,o.x,o.y,4.3,'#fff','#607b87',1.8);
+    label(ctx,'O',o.x+8,o.y-11,colors.ink,15,'left',770);
+    circle(ctx,pivot.x,pivot.y,7,'#e7b851','#74521c',1.8);
+    line(ctx,pivot.x-13,pivot.y+10,pivot.x+13,pivot.y+10,'#96773d',1.3);
+    label(ctx,'A₁',pivot.x+11,pivot.y-5,colors.ink,16,'left',770);
+  });
+});
+
+for (const button of document.querySelectorAll('[data-step]')) button.addEventListener('click',()=>{
+  selectStep(Number(button.dataset.step));
+});
+for (const button of document.querySelectorAll('[data-boundary]')) button.addEventListener('click',()=>{
+  controls.set({friction:result.critical*Number(button.dataset.boundary)});
+  selectStep(3);
+});
+$('step-back').addEventListener('click',()=>selectStep(step-1));
+$('step-next').addEventListener('click',()=>selectStep(step+1));
+$('load-example').addEventListener('click',()=>controls.set(EXAMPLE));
+$('release-shoe').addEventListener('click',()=>controls.set({opening:0}));
+$('reset-input').addEventListener('click',()=>{controls.reset();selectStep(0);});
+update();
+selectStep(0);
+
+  </script>
+</body>
+</html>
